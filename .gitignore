@@ -1,0 +1,6 @@
+# Private config files
+.env
+
+# Directories
+boardcamp-front/
+node_modules/
