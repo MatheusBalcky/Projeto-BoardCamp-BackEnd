@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { getCategories } from '../controllers/categoriesControll.js';
+import { getCategories, postInCategories } from '../controllers/categoriesControll.js';
 
 const router = Router();
 
 router.get('/categories', getCategories);
+router.post('/categories', postInCategories);
 
 
 router.get('/test', async (req, res) =>{
