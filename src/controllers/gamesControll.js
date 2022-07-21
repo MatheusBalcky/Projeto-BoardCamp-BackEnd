@@ -24,7 +24,7 @@ export async function getGames (req, res){
 }
 
 
-export async function insertGame (req, res){ // & WITH BUG FIX LATER... 
+export async function insertGame (req, res){
     const gameToInsert = req.body;
     const { name, image, stockTotal, categoryId, pricePerDay } = req.body;
 
@@ -47,8 +47,8 @@ export async function insertGame (req, res){ // & WITH BUG FIX LATER...
         }
 
         const { rows: queryInsertGame} = await clientpg
-        .query(`INSERT INTO games (name, image, stocktotal, categoryId, pricePerDay) VALUES ($1, $2, $3 , $4, $5)`,
-        [name, image, stockTotal, categoryId, pricePerDay]);
+        .query(`INSERT INTO games (name, image, "stockTotal", "categoryId", "pricePerDay") 
+                VALUES ($1, $2, $3 , $4, $5)`,[name, image, stockTotal, categoryId, pricePerDay]);
 
         console.log(queryInsertGame)
 
@@ -57,8 +57,4 @@ export async function insertGame (req, res){ // & WITH BUG FIX LATER...
         console.log(error)
         return res.sendStatus(500);
     }
-
-    
-    
-    // console.log(categoryId)
 }
