@@ -18,7 +18,7 @@ router.post('/games', insertGame);
 router.get('/customers', getClients);
 router.get('/customers/:id', getClientsById);
 router.post('/customers', insertClients);
-//router.put('/customers/:id', updateClients);
+router.put('/customers/:id', updateClients);
 
 
 

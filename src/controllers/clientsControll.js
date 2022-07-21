@@ -62,28 +62,24 @@ export async function insertClients (req, res){
     
 }
 
-export async function updateClients (req, res){ // & WITH A LITTLE BUG
-    // const { id } = req.params;
-    // const clientUpdateData = req.body;
+export async function updateClients (req, res){
+    const { id } = req.params;
+    const clientUpdateData = req.body;
 
-    // const { error } = clientSchema.validate(clientUpdateData);
-    // if (error){ return res.sendStatus(400) };
+    const { error } = clientSchema.validate(clientUpdateData);
+    if (error){ return res.sendStatus(400) };
 
-    // try {
-    //     const query = `
-    //     SELECT * FROM customers
-    //     WHERE cpf = $1
-    //     `
+    try {
+        const { rows: queryVerifyCpf } = await clientpg.query(`SELECT * FROM customers WHERE cpf = $1 AND id <> $2`, [clientUpdateData.cpf, id]);
+        if(queryVerifyCpf.length > 0){  return res.sendStatus(409)  };
 
-    //     const { rows: queryVerifyCpf } = await clientpg.query(`SELECT * FROM customers WHERE cpf = $1`, [clientUpdateData.cpf]);
-    //     if(queryVerifyCpf.length > 0){  return res.sendStatus(409)  };
+        await clientpg.query(`UPDATE customers
+        SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5`,
+        [clientUpdateData.name, clientUpdateData.phone, clientUpdateData.cpf, clientUpdateData.birthday, id])
 
-    //     await clientpg.query(`UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5`,
-    //     [clientUpdateData.name, clientUpdateData.phone, clientUpdateData.cpf, clientUpdateData.birthday, id])
-
-    //     return res.sendStatus(200);
-    // } catch (error) {
-    //     console.log(error);
-    //     res.sendStatus(500);
-    // }
+        return res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 }
