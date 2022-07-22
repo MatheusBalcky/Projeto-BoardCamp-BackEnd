@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { getCategories, postInCategories } from '../controllers/categoriesControll.js';
-import { getClients, getClientsById, insertClients, updateClients } from '../controllers/clientsControll.js';
 import { getGames, insertGame } from '../controllers/gamesControll.js';
+import { getClients, getClientsById, insertClients, updateClients } from '../controllers/clientsControll.js';
+import { getRentals, insertRentals } from '../controllers/rentalsControll.js';
 
 
 const router = Router();
@@ -20,7 +21,9 @@ router.get('/customers/:id', getClientsById);
 router.post('/customers', insertClients);
 router.put('/customers/:id', updateClients);
 
-
+// & ROUTES RENTALS
+router.get('/rentals', getRentals);
+router.post('/rentals', insertRentals);
 
 
 
