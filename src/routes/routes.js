@@ -3,8 +3,8 @@ import { getCategories, postInCategories } from '../controllers/categoriesContro
 import { getGames, insertGame } from '../controllers/gamesControll.js';
 import { getClients, getClientsById, insertClients, updateClients } from '../controllers/clientsControll.js';
 
-import { getRentals, insertRentals, returnRental } from '../controllers/rentalsControll.js';
-import { verifyRental } from '../middlewares/rentalsMWs.js';
+import { getRentals, insertRentals, returnRental, deleteRental} from '../controllers/rentalsControll.js';
+import { verifyRental, verifyRentalToDelete } from '../middlewares/rentalsMWs.js';
 
 
 const router = Router();
@@ -27,6 +27,7 @@ router.put('/customers/:id', updateClients);
 router.get('/rentals', getRentals);
 router.post('/rentals', insertRentals);
 router.post('/rentals/:id/return', verifyRental, returnRental);
+router.delete('/rentals/:id', verifyRentalToDelete, deleteRental);
 
 
 

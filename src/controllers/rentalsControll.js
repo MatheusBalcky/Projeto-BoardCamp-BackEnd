@@ -95,7 +95,7 @@ export async function insertRentals (req, res){
 
 export async function returnRental (req, res){
     const { rentalReturning } = res.locals;
-    
+
     try {
         const daysPassed = (dayjs().diff(dayjs(rentalReturning.rentDate), 'd'))
         const currentDate = dayjs().format('DD-MM-YYYY');
@@ -124,4 +124,17 @@ export async function returnRental (req, res){
 
 
     
+}
+
+export async function deleteRental (req, res){
+    const { rentalToDelete } = res.locals;
+
+    try {
+        await clientpg.query(`DELETE FROM rentals WHERE id = $1`,[rentalToDelete.id]);
+
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500);
+    }
 }
