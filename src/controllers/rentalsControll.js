@@ -35,19 +35,16 @@ export async function getRentals (req, res){
             const rentalsByCustomerId = rentalsArr.filter( rental => rental.customerId === parseInt(customerId));
             return res.status(200).send(rentalsByCustomerId);
         }
+
         if(gameId){
             const rentalsByGameId = rentalsArr.filter( rental => rental.gameId === parseInt(gameId));
             return res.status(200).send(rentalsByGameId);
         }
-        
-
-        
-        
 
         return res.status(200).send(rentalsArr);
 
-
     } catch (error) {
+
         console.log(error);
         res.sendStatus(500);
     }
@@ -64,9 +61,10 @@ export async function insertRentals (req, res){
         const { rows: queryCountGameRentals } = await clientpg.query('SELECT COUNT ("gameId") FROM rentals WHERE "gameId" = $1',[gameId]);
         
         const amountRented = parseInt(queryCountGameRentals[0].count);
+        console.log(amountRented);
         const gameFounded = queryFindGame[0];
 
-        if(queryVerifyCustomer.length !== 1 || queryFindGame.length !== 1 || daysRented < 1 || amountRented > gameFounded.stockTotal){
+        if(queryVerifyCustomer.length !== 1 || queryFindGame.length !== 1 || daysRented < 1 || amountRented >= gameFounded.stockTotal){
             return res.sendStatus(400);
         }
         

@@ -5,18 +5,35 @@ export async function getGames (req, res){
     let { name } = req.query;
     
     try {
+        const { rows: queryCategoriesGames } = await clientpg.query(`SELECT * FROM categories`);
+        const { rows: queryGames} = await clientpg.query('SELECT * FROM games');
 
         if(name){
             name = name + '%'; name = name.toLowerCase();
 
             const { rows: queryGames} = await clientpg.query(`SELECT * FROM games WHERE lower(name) LIKE $1`, [name]);
+            
+            const gamesWithCategoriesArr = queryGames.map( game =>{
+                const objectReturn = {
+                    ...game,
+                    categoryName: queryCategoriesGames.find( categ => game.categoryId === categ.id).name
+                }
+                return objectReturn;
+            });
 
-            return res.status(200).send(queryGames);            
+            return res.status(200).send(gamesWithCategoriesArr);            
         }
 
-        const { rows: queryGames} = await clientpg.query('SELECT * FROM games');
+        const gamesWithCategoriesArr = queryGames.map( game =>{
+            const objectReturn = {
+                ...game,
+                categoryName: queryCategoriesGames.find( categ => game.categoryId === categ.id).name
+            }
+            return objectReturn;
+        });
 
-        res.status(200).send(queryGames);
+        res.status(200).send(gamesWithCategoriesArr);
+
     } catch (error) {
         console.log(error)
         res.status(500).send('Server error');
