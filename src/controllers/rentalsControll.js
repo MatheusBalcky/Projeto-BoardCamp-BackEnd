@@ -1,6 +1,7 @@
 import { clientpg } from "../db/postgres.js";
 import dayjs from "dayjs";
 
+
 export async function getRentals (req, res){
     const { customerId, gameId } = req.query;
     
@@ -73,7 +74,7 @@ export async function insertRentals (req, res){
         const values = [
             customerId,
             gameId,
-            dayjs().format("DD-MM-YYYY"),
+            dayjs().format("DD-MM-YYYY"), // rentDate
             daysRented,
             null, // returnDate
             originalPrice,
@@ -92,3 +93,35 @@ export async function insertRentals (req, res){
     }   
 }
 
+export async function returnRental (req, res){
+    const { rentalReturning } = res.locals;
+    
+    try {
+        const daysPassed = (dayjs().diff(dayjs(rentalReturning.rentDate), 'd'))
+        const currentDate = dayjs().format('DD-MM-YYYY');
+
+        if(daysPassed <= rentalReturning.daysRented){
+
+            await clientpg.query(`UPDATE rentals SET "returnDate" = $1 WHERE id = $2`, [currentDate, rentalReturning.id]);
+    
+            return res.sendStatus(200)
+        }
+
+        const pricePerDay = rentalReturning.originalPrice / rentalReturning.daysRented ;
+        const fee = (daysPassed - rentalReturning.daysRented) * pricePerDay;
+
+        await clientpg.query(`UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3`, [currentDate, fee, rentalReturning.id]);
+
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+
+    
+
+
+
+    
+}
