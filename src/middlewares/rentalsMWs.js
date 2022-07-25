@@ -16,7 +16,6 @@ export async function verifyRental (req,res,next){
     next()
 }
 
-
 export async function verifyRentalToDelete (req,res,next){
     const { id: idRentalToReturn } = req.params;
 
@@ -31,4 +30,22 @@ export async function verifyRentalToDelete (req,res,next){
     res.locals.rentalToDelete = queryToVerifyRentalExists[0];
 
     next()
+}
+
+export async function verifyNewRental (req, res, next){
+    const { customerId } = req.body;
+
+    try {
+        const { rows: queryVerifyCustomer } = await clientpg.query('SELECT * FROM customers WHERE id = $1', [customerId]);
+
+        if(queryVerifyCustomer.length !== 1){
+            return res.sendStatus(400);
+        }
+        
+        console.log('Passou na verificação do cliente');
+        next();
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 }

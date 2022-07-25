@@ -1,16 +1,14 @@
 import { clientpg } from '../db/postgres.js';
-import { clientSchema } from '../schemas/schemas.js';
+
 
 export async function getClients (req, res){
     let { cpf } = req.query;
 
     try {
         if(cpf){
-            cpf = cpf + '%';
-            const { rows: queryClients } = await clientpg.query(`SELECT * FROM customers WHERE cpf LIKE $1`, [cpf]);
+            const { rows: queryClients } = await clientpg.query(`SELECT * FROM customers WHERE cpf LIKE $1`, [cpf + "%"]);
             return res.status(200).send(queryClients);
         }
-
 
         const { rows: queryClients } = await clientpg.query(`SELECT * FROM customers`);
 
@@ -40,14 +38,8 @@ export async function getClientsById (req, res){
 
 export async function insertClients (req, res){
     const clientData = req.body;
-    const { error } = clientSchema.validate(clientData);
-    
-    if (error){ return res.sendStatus(400) };
 
     try {
-        const { rows: queryVerifyCpf } = await clientpg.query(`SELECT * FROM customers WHERE cpf = $1`, [clientData.cpf]);
-        if(queryVerifyCpf.length > 0){  return res.sendStatus(409)  };
-
         await clientpg
         .query(`INSERT INTO customers (name, phone, cpf, birthday)
                 VALUES ($1, $2, $3, $4)`, [clientData.name, clientData.phone, clientData.cpf, clientData.birthday]);
@@ -57,9 +49,7 @@ export async function insertClients (req, res){
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
-    }
-
-    
+    }   
 }
 
 export async function updateClients (req, res){

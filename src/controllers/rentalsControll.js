@@ -44,8 +44,17 @@ export async function getRentals (req, res){
 
         return res.status(200).send(rentalsArr);
 
-    } catch (error) {
+        // & TRY TO IMPLEMENT THIS AFETER...
+        // const { rows: queryGetRentals } = await clientpg.query(
+        //     `SELECT rentals.*, customers.name as "customerName",
+        //     games.name as "gameName", games."categoryId" FROM rentals
+        //     JOIN customers
+        //     ON rentals."customerId" = customers.id
+        //     JOIN games
+        //     ON rentals."gameId" = games.id`);   
+        // return res.status(200).send(queryGetRentals);
 
+    } catch (error) {
         console.log(error);
         res.sendStatus(500);
     }
@@ -57,15 +66,14 @@ export async function insertRentals (req, res){
     const { customerId, gameId, daysRented } = req.body;
     
     try {
-        const { rows: queryVerifyCustomer } = await clientpg.query('SELECT * FROM customers WHERE id = $1', [customerId]);
+        
         const { rows: queryFindGame } = await clientpg.query('SELECT * FROM games WHERE id = $1', [gameId]);
         const { rows: queryCountGameRentals } = await clientpg.query('SELECT COUNT ("gameId") FROM rentals WHERE "gameId" = $1',[gameId]);
         
         const amountRented = parseInt(queryCountGameRentals[0].count);
-        console.log(amountRented);
         const gameFounded = queryFindGame[0];
 
-        if(queryVerifyCustomer.length !== 1 || queryFindGame.length !== 1 || daysRented < 1 || amountRented >= gameFounded.stockTotal){
+        if(queryFindGame.length !== 1 || daysRented < 1 || amountRented >= gameFounded.stockTotal){
             return res.sendStatus(400);
         }
         
