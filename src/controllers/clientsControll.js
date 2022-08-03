@@ -1,5 +1,5 @@
 import { clientpg } from '../db/postgres.js';
-
+import { clientSchema } from '../schemas/schemas.js';
 
 export async function getClients (req, res){
     let { cpf } = req.query;
